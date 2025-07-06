@@ -378,7 +378,6 @@ public class CPMService {
         return resultatFinal;
     }
 
-
     public List<String> cheminCritique() {
         List<String> chemin = new ArrayList<>();
         chemin.add("Début");
@@ -429,7 +428,8 @@ public class CPMService {
         // Étape 1 : calcul des marges pour les vraies tâches (non fictives)
         for (Task task : tasks) {
             String nom = task.getNom();
-            if (!nom.startsWith("F")) {
+            // On exclut seulement les arcs fictifs (F1, F2, ...) mais pas la tâche "F"
+            if (!nom.matches("F\\d+")) {
                 int marge = task.getDateTard() - task.getDateTot();
                 task.setMarge(marge);
                 margeMap.put(nom, marge);
@@ -441,7 +441,8 @@ public class CPMService {
 
         for (Task task : tasks) {
             String nom = task.getNom();
-            if (nom.startsWith("F") && task.getPreced().size() == 1) {
+            // Ici on cible les arcs fictifs explicitement
+            if (nom.matches("F\\d+") && task.getPreced().size() == 1) {
                 String pred = task.getPreced().get(0);
                 groupesFictifs.computeIfAbsent(pred, k -> new ArrayList<>()).add(task);
             }
@@ -473,7 +474,6 @@ public class CPMService {
 
         return margeMap;
     }
-
 
     public Map<String, List<String>> getSucc() {
         return successeurs;
